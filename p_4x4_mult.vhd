@@ -121,7 +121,7 @@ begin
   in_fifo_ready_i <= ((valid_ring_r(2) and valid_ring_r(1)) and valid_ring_r(0)) nand out_fifo_full_o;
 
 
-  i_in_FIFO : entity work.axi_FIFO
+  i_in_FIFO : entity work.rvh_FIFO
     generic map (
       w_data_in_g => 8,
       d_FIFO_g    => 3
@@ -252,7 +252,7 @@ begin
   out_fifo_ready_i <= ready_i;
   out_fifo_data_i  <= a2_c & a2_s & sum_2;
 
-  i_out_FIFO : entity work.axi_FIFO
+  i_out_FIFO : entity work.rvh_FIFO
     generic map (
       w_data_in_g => 8,
       d_FIFO_g    => 3
