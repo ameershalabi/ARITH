@@ -6,7 +6,7 @@
 -- Author      : Ameer Shalabi <ameershalabi94@gmail.com>
 -- Company     : 
 -- Created     : Wed Mar 20 07:38:54 2024
--- Last update : Fri Mar 22 12:32:48 2024
+-- Last update : Sun Mar 24 16:53:45 2024
 -- Platform    : -
 -- Standard    : VHDL-2008
 --------------------------------------------------------------------------------
@@ -28,6 +28,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity ks_adder_4b is
+  generic (
+    gen_in_reg_g  : std_logic := '0';
+    gen_out_reg_g : std_logic := '0'
+  );
   port (
     clk : in std_logic; -- clock pin
     rst : in std_logic; -- active low rest pin
@@ -57,9 +61,9 @@ architecture arch of ks_adder_4b is
   signal p_g_c : std_logic_vector(4 downto 0);
 
   -- output signals and registers
-  signal sum          : std_logic_vector(3 downto 0);
-  signal sum_r        : std_logic_vector(3 downto 0);
-  signal c_o_r        : std_logic_vector(3 downto 0);
+  signal sum   : std_logic_vector(3 downto 0);
+  signal sum_r : std_logic_vector(3 downto 0);
+  signal c_o_r : std_logic_vector(3 downto 0);
 
   -- hold the generate and propogate of each bit pair
   -- store p(x)
@@ -88,29 +92,102 @@ architecture arch of ks_adder_4b is
   signal g_0_3 : std_logic;
 
 begin
+
   ctrl_proc : process (clk, rst)
   begin
     if (rst = '0') then
       clr_r <= '0';
       enb_r <= '0';
-      a_r   <= (others => '0');
-      b_r   <= (others => '0');
-      c_i_r <= '0';
     elsif rising_edge(clk) then
       clr_r <= clr;
       enb_r <= enb;
-      if enb_r = '1' then
-        a_r   <= a_i;
-        b_r   <= b_i;
-        c_i_r <= c_i;
-        if clr_r = '1' then
-          a_r   <= (others => '0');
-          b_r   <= (others => '0');
-          c_i_r <= '0';
-        end if;
-      end if;
     end if;
   end process ctrl_proc;
+
+  -- generate input registers
+  gen_in_reg : if (gen_in_reg_g = '1') generate
+    ctrl_proc : process (clk, rst)
+    begin
+      if (rst = '0') then
+        a_r   <= (others => '0');
+        b_r   <= (others => '0');
+        c_i_r <= '0';
+      elsif rising_edge(clk) then
+        if enb_r = '1' then
+          a_r   <= a_i;
+          b_r   <= b_i;
+          c_i_r <= c_i;
+          if clr_r = '1' then
+            a_r   <= (others => '0');
+            b_r   <= (others => '0');
+            c_i_r <= '0';
+          end if;
+        end if;
+      end if;
+    end process ctrl_proc;
+
+  end generate gen_in_reg;
+
+  -- generate output registers
+  gen_out_reg : if (gen_out_reg_g = '1') generate
+    ctrl_proc : process (clk, rst)
+    begin
+      if (rst = '0') then
+        sum_r <= (others => '0');
+        c_o_r <= (others => '0');
+      elsif rising_edge(clk) then
+        if enb_r = '1' then
+          sum_r <= sum;
+          c_o_r <= p_g_c(4 downto 1);
+          if clr_r = '1' then
+            sum_r <= (others => '0');
+            c_o_r <= (others => '0');
+          end if;
+        end if;
+      end if;
+    end process ctrl_proc;
+
+  end generate gen_out_reg;
+
+  -- no input registers
+  gen_no_in_reg : if (gen_in_reg_g = '0') generate
+    a_r   <= a_i;
+    b_r   <= b_i;
+    c_i_r <= c_i;
+
+  end generate gen_no_in_reg;
+
+  -- no output registers
+  gen_no_out_reg : if (gen_out_reg_g = '0') generate
+    sum_r <= sum;
+    c_o_r <= p_g_c(4 downto 1);
+
+  end generate gen_no_out_reg;
+
+
+  --ctrl_proc : process (clk, rst)
+  --begin
+  --  if (rst = '0') then
+  --    clr_r <= '0';
+  --    enb_r <= '0';
+  --    a_r   <= (others => '0');
+  --    b_r   <= (others => '0');
+  --    c_i_r <= '0';
+  --  elsif rising_edge(clk) then
+  --    clr_r <= clr;
+  --    enb_r <= enb;
+  --    if enb_r = '1' then
+  --      a_r   <= a_i;
+  --      b_r   <= b_i;
+  --      c_i_r <= c_i;
+  --      if clr_r = '1' then
+  --        a_r   <= (others => '0');
+  --        b_r   <= (others => '0');
+  --        c_i_r <= '0';
+  --      end if;
+  --    end if;
+  --  end if;
+  --end process ctrl_proc;
 
   -- p(x) = a(x) xor b(x)
   p(0) <= a_r(0) xor b_r(0);
@@ -152,33 +229,22 @@ begin
     end loop gen_sum_loop;
   end process gen_sum_proc;
 
-  out_proc : process (clk, rst)
-  begin
-    if (rst = '0') then
-      sum_r <= (others => '0');
-      c_o_r <= (others => '0');
-    elsif rising_edge(clk) then
-      if enb_r = '1' then
-        sum_r <= sum;
-        c_o_r <= p_g_c(4 downto 1);
-        if clr_r = '1' then
-          sum_r <= (others => '0');
-          c_o_r <= (others => '0');
-        end if;
-      end if;
-    end if;
-  end process out_proc;
-  --gen_adders : for full_adder in 0 to 3 generate
+  --out_proc : process (clk, rst)
   --begin
-  --  i_fa : entity work.fa
-  --    port map (
-  --      a_i => a_r(full_adder),
-  --      b_i => b_r(full_adder),
-  --      c_i => p_g_c(full_adder),
-  --      s_o => sum2(full_adder),
-  --      c_o => carry_o_bits(full_adder)
-  --    );
-  --end generate gen_adders;
+  --  if (rst = '0') then
+  --    sum_r <= (others => '0');
+  --    c_o_r <= (others => '0');
+  --  elsif rising_edge(clk) then
+  --    if enb_r = '1' then
+  --      sum_r <= sum;
+  --      c_o_r <= p_g_c(4 downto 1);
+  --      if clr_r = '1' then
+  --        sum_r <= (others => '0');
+  --        c_o_r <= (others => '0');
+  --      end if;
+  --    end if;
+  --  end if;
+  --end process out_proc;
 
   s_o <= sum_r;
   c_o <= c_o_r(3);
