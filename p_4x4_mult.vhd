@@ -6,7 +6,7 @@
 -- Author      : Ameer Shalabi <ameershalabi94@gmail.com>
 -- Company     : -
 -- Created     : Thu Feb 29 13:12:12 2024
--- Last update : Mon Mar  4 22:45:45 2024
+-- Last update : Sun Mar 24 16:57:25 2024
 -- Platform    : -
 -- Standard    : VHDL-2008
 --------------------------------------------------------------------------------
@@ -193,9 +193,11 @@ begin
   a0_a <= mult_b_r(0)&mult_b_r(0)&mult_b_r(0)&mult_b_r(0) and '0'&mult_a_r(3 downto 1);
 
 
-  a0_adder : entity work.carry_adder_4b
+  a0_adder : entity work.ks_adder_4b
+  --a0_adder : entity work.carry_lookahead_adder_4b
     generic map (
-      gen_in_reg_g => '0'
+      gen_in_reg_g => '0',
+      gen_out_reg_g => '1'
     )
     port map (
       clk => clk,
@@ -213,9 +215,11 @@ begin
   a1_b <= b_arr(0)(2)&b_arr(0)(2)&b_arr(0)(2)&b_arr(0)(2) and a_arr(0);
   a1_a <= a0_c&a0_s(3 downto 1);
 
-  a1_adder : entity work.carry_adder_4b
+  a1_adder : entity work.ks_adder_4b
+  --a1_adder : entity work.carry_lookahead_adder_4b
     generic map (
-      gen_in_reg_g => '0'
+      gen_in_reg_g => '0',
+      gen_out_reg_g => '1'
     )
     port map (
       clk => clk,
@@ -232,9 +236,11 @@ begin
   a2_b <= b_arr(1)(3)&b_arr(1)(3)&b_arr(1)(3)&b_arr(1)(3) and a_arr(1);
   a2_a <= a1_c&a1_s(3 downto 1);
 
-  a2_adder : entity work.carry_adder_4b
+  a2_adder : entity work.ks_adder_4b
+  --a2_adder : entity work.carry_lookahead_adder_4b
     generic map (
-      gen_in_reg_g => '0'
+      gen_in_reg_g => '0',
+      gen_out_reg_g => '1'
     )
     port map (
       clk => clk,
