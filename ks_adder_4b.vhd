@@ -6,7 +6,7 @@
 -- Author      : Ameer Shalabi <ameershalabi94@gmail.com>
 -- Company     : 
 -- Created     : Wed Mar 20 07:38:54 2024
--- Last update : Sun Mar 24 16:53:45 2024
+-- Last update : Sun Apr 13 20:15:46 2025
 -- Platform    : -
 -- Standard    : VHDL-2008
 --------------------------------------------------------------------------------
@@ -29,8 +29,8 @@ use ieee.std_logic_1164.all;
 
 entity ks_adder_4b is
   generic (
-    gen_in_reg_g  : std_logic := '0';
-    gen_out_reg_g : std_logic := '0'
+    gen_in_reg_g  : std_logic := '1';
+    gen_out_reg_g : std_logic := '1'
   );
   port (
     clk : in std_logic; -- clock pin

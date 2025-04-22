@@ -6,7 +6,7 @@
 -- Author      : Ameer Shalabi <ameershalabi94@gmail.com>
 -- Company     : -
 -- Created     : Thu Feb 29 13:12:12 2024
--- Last update : Mon Mar  4 22:45:45 2024
+-- Last update : Sun Apr 13 13:51:20 2025
 -- Platform    : -
 -- Standard    : VHDL-2008
 --------------------------------------------------------------------------------
@@ -19,6 +19,9 @@ library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
+
+library arith;
+library rvh;
 
 entity p_4x4_mult is
   port (
@@ -121,7 +124,7 @@ begin
   in_fifo_ready_i <= ((valid_ring_r(2) and valid_ring_r(1)) and valid_ring_r(0)) nand out_fifo_full_o;
 
 
-  i_in_FIFO : entity work.rvh_FIFO
+  i_in_FIFO : entity rvh.rvh_fifo
     generic map (
       w_data_in_g => 8,
       d_FIFO_g    => 3
@@ -193,7 +196,7 @@ begin
   a0_a <= mult_b_r(0)&mult_b_r(0)&mult_b_r(0)&mult_b_r(0) and '0'&mult_a_r(3 downto 1);
 
 
-  a0_adder : entity work.carry_adder_4b
+  a0_adder : entity arith.carry_adder_4b
     generic map (
       gen_in_reg_g => '0'
     )
@@ -213,7 +216,7 @@ begin
   a1_b <= b_arr(0)(2)&b_arr(0)(2)&b_arr(0)(2)&b_arr(0)(2) and a_arr(0);
   a1_a <= a0_c&a0_s(3 downto 1);
 
-  a1_adder : entity work.carry_adder_4b
+  a1_adder : entity arith.carry_adder_4b
     generic map (
       gen_in_reg_g => '0'
     )
@@ -232,7 +235,7 @@ begin
   a2_b <= b_arr(1)(3)&b_arr(1)(3)&b_arr(1)(3)&b_arr(1)(3) and a_arr(1);
   a2_a <= a1_c&a1_s(3 downto 1);
 
-  a2_adder : entity work.carry_adder_4b
+  a2_adder : entity arith.carry_adder_4b
     generic map (
       gen_in_reg_g => '0'
     )
@@ -252,7 +255,7 @@ begin
   out_fifo_ready_i <= ready_i;
   out_fifo_data_i  <= a2_c & a2_s & sum_2;
 
-  i_out_FIFO : entity work.rvh_FIFO
+  i_out_FIFO : entity rvh.rvh_fifo
     generic map (
       w_data_in_g => 8,
       d_FIFO_g    => 3

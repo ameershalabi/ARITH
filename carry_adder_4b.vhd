@@ -6,7 +6,7 @@
 -- Author      : Ameer Shalabi <ameershalabi94@gmail.com>
 -- Company     : 
 -- Created     : Sat Mar  2 17:18:10 2024
--- Last update : Sun Mar  3 18:05:35 2024
+-- Last update : Sun Apr 13 20:15:11 2025
 -- Platform    : -
 -- Standard    : VHDL-2008
 --------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ use ieee.std_logic_1164.all;
 
 entity carry_adder_4b is
   generic (
-    gen_in_reg_g : std_logic := '0'
+    gen_in_reg_g : std_logic := '1'
   );
   port (
     clk : in std_logic; -- clock pin
