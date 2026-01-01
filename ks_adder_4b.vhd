@@ -6,7 +6,7 @@
 -- Author      : Ameer Shalabi <ameershalabi94@gmail.com>
 -- Company     : 
 -- Created     : Wed Mar 20 07:38:54 2024
--- Last update : Sun Apr 13 20:15:46 2025
+-- Last update : Thu Jan  1 10:27:17 2026
 -- Platform    : -
 -- Standard    : VHDL-2008
 --------------------------------------------------------------------------------
@@ -164,31 +164,6 @@ begin
 
   end generate gen_no_out_reg;
 
-
-  --ctrl_proc : process (clk, rst)
-  --begin
-  --  if (rst = '0') then
-  --    clr_r <= '0';
-  --    enb_r <= '0';
-  --    a_r   <= (others => '0');
-  --    b_r   <= (others => '0');
-  --    c_i_r <= '0';
-  --  elsif rising_edge(clk) then
-  --    clr_r <= clr;
-  --    enb_r <= enb;
-  --    if enb_r = '1' then
-  --      a_r   <= a_i;
-  --      b_r   <= b_i;
-  --      c_i_r <= c_i;
-  --      if clr_r = '1' then
-  --        a_r   <= (others => '0');
-  --        b_r   <= (others => '0');
-  --        c_i_r <= '0';
-  --      end if;
-  --    end if;
-  --  end if;
-  --end process ctrl_proc;
-
   -- p(x) = a(x) xor b(x)
   p(0) <= a_r(0) xor b_r(0);
   p(1) <= a_r(1) xor b_r(1);
@@ -228,23 +203,6 @@ begin
       sum(s) <= a_r(s) xor b_r(s) xor p_g_c(s);
     end loop gen_sum_loop;
   end process gen_sum_proc;
-
-  --out_proc : process (clk, rst)
-  --begin
-  --  if (rst = '0') then
-  --    sum_r <= (others => '0');
-  --    c_o_r <= (others => '0');
-  --  elsif rising_edge(clk) then
-  --    if enb_r = '1' then
-  --      sum_r <= sum;
-  --      c_o_r <= p_g_c(4 downto 1);
-  --      if clr_r = '1' then
-  --        sum_r <= (others => '0');
-  --        c_o_r <= (others => '0');
-  --      end if;
-  --    end if;
-  --  end if;
-  --end process out_proc;
 
   s_o <= sum_r;
   c_o <= c_o_r(3);
